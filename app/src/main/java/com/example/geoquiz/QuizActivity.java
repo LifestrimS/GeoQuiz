@@ -3,6 +3,7 @@ package com.example.geoquiz;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
@@ -12,6 +13,9 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 
 public class QuizActivity extends AppCompatActivity {
+
+    private static final String TAG = "QuizActivity";
+
     @BindView(R.id.question_text_view)
     TextView mQuestionTextView;
 
@@ -22,7 +26,7 @@ public class QuizActivity extends AppCompatActivity {
     Button mFalseButton;
 
     @BindView(R.id.next_button)
-    ImageButton mNextButton;
+    Button mNextButton;
 
     private Question[] mQuestionBank = new Question[] {
             new Question(R.string.question_australia, true),
@@ -38,6 +42,7 @@ public class QuizActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Log.d(TAG, "onCreate(Bundle) called");
         setContentView(R.layout.activity_quiz);
         ButterKnife.bind(this);
 
@@ -54,6 +59,36 @@ public class QuizActivity extends AppCompatActivity {
             updateQuestion();});
 
         updateQuestion();
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        Log.d(TAG, "onStart() called");
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        Log.d(TAG, "onStop() called");
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        Log.d(TAG, "onDestroy() called");
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        Log.d(TAG, "onPause() called");
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        Log.d(TAG, "onResume() called");
     }
 
     private void updateQuestion() {
