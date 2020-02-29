@@ -1,12 +1,11 @@
 package com.example.geoquiz;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.Button;
-import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -29,6 +28,9 @@ public class QuizActivity extends AppCompatActivity {
 
     @BindView(R.id.next_button)
     Button mNextButton;
+
+    @BindView(R.id.cheat_button)
+    Button mCheatButton;
 
     private Question[] mQuestionBank = new Question[] {
             new Question(R.string.question_australia, true),
@@ -63,6 +65,11 @@ public class QuizActivity extends AppCompatActivity {
         mNextButton.setOnClickListener(v -> {
             mCurrentIndex = (mCurrentIndex + 1) % mQuestionBank.length;
             updateQuestion();});
+
+        mCheatButton.setOnClickListener(v -> {
+            Intent intent = new Intent(QuizActivity.this, CheatActivity.class);
+            startActivity(intent);
+        });
 
         updateQuestion();
     }
@@ -111,7 +118,7 @@ public class QuizActivity extends AppCompatActivity {
 
     private void checkAnswer(boolean userPressedTrue) {
         boolean answerIsTrue = mQuestionBank[mCurrentIndex].isAnswerTrue();
-        int messageResId = 0;
+        int messageResId;
 
         if (userPressedTrue == answerIsTrue) {
             messageResId = R.string.correct_toast;
