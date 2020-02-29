@@ -5,15 +5,18 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.text.DecimalFormat;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class QuizActivity extends AppCompatActivity {
+public class QuizActivity extends AppCompatActivity implements View.OnClickListener {
 
     private static final String TAG = "QuizActivity";
     private static final String KEY_INDEX = "index";
@@ -39,6 +42,7 @@ public class QuizActivity extends AppCompatActivity {
             new Question(R.string.question_asia, true),
     };
 
+    private float mRightAnswers = 0;
     private int mCurrentIndex = 0;
 
     @Override
@@ -52,19 +56,36 @@ public class QuizActivity extends AppCompatActivity {
             mCurrentIndex = savedInstanceState.getInt(KEY_INDEX,0);
         }
 
-        mQuestionTextView.setOnClickListener(v -> {
-            mCurrentIndex = (mCurrentIndex + 1) % mQuestionBank.length;
-            updateQuestion();});
-
-        mTrueButton.setOnClickListener(v -> checkAnswer(true));
-
-        mFalseButton.setOnClickListener(v -> checkAnswer(false));
-
-        mNextButton.setOnClickListener(v -> {
-            mCurrentIndex = (mCurrentIndex + 1) % mQuestionBank.length;
-            updateQuestion();});
+        mQuestionTextView.setOnClickListener(this);
+        mTrueButton.setOnClickListener(this);
+        mFalseButton.setOnClickListener(this);
+        mNextButton.setOnClickListener(this);
 
         updateQuestion();
+    }
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.true_button:
+                checkAnswer(true);
+                mFalseButton.setEnabled(false);
+                mTrueButton.setEnabled(false);
+                break;
+            case R.id.false_button:
+                checkAnswer(false);
+                mFalseButton.setEnabled(false);
+                mTrueButton.setEnabled(false);
+                break;
+            case R.id.question_text_view:
+            case R.id.next_button:
+                mCurrentIndex = (mCurrentIndex + 1) % mQuestionBank.length;
+                updateQuestion();
+                mFalseButton.setEnabled(true);
+                mTrueButton.setEnabled(true);
+                break;
+        }
+
     }
 
     @Override
@@ -115,11 +136,21 @@ public class QuizActivity extends AppCompatActivity {
 
         if (userPressedTrue == answerIsTrue) {
             messageResId = R.string.correct_toast;
+            mRightAnswers++;
         } else {
             messageResId = R.string.incorrect_toast;
         }
 
         Toast.makeText(this, messageResId, Toast.LENGTH_SHORT)
                 .show();
+
+        if (mCurrentIndex == 5) {
+            mRightAnswers = mRightAnswers/6*100;
+            int ans = (int) mRightAnswers;
+            Toast.makeText(this, "You have " + ans + "% of right answers!", Toast.LENGTH_SHORT)
+                    .show();
+        } else if (mCurrentIndex == 0) {
+            mRightAnswers = 0;
+        }
     }
 }
