@@ -37,5 +37,5 @@
         android:drawableEnd="@drawable/arrow_right"
         android:drawablePadding="4dp"
         android:text="@string/next_button" />
-    
+
 </LinearLayout>
