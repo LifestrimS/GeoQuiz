@@ -21,6 +21,8 @@ public class QuizActivity extends AppCompatActivity {
     private static final String KEY_INDEX = "index";
     public static final String KEY_IS_CHEATER = "cheater";
     public static final String KEY_ENABLE_NEXT_BUTTON = "nextButton";
+    public static final String KEY_HINT = "hint";
+
     public static final int REQUEST_CODE_CHEAT = 0;
 
     @BindView(R.id.question_text_view)
@@ -38,6 +40,9 @@ public class QuizActivity extends AppCompatActivity {
     @BindView(R.id.cheat_button)
     Button mCheatButton;
 
+    @BindView(R.id.hint_text_view)
+    TextView mHintTextView;
+
     private Question[] mQuestionBank = new Question[] {
             new Question(R.string.question_australia, true),
             new Question(R.string.question_oceans, true),
@@ -50,6 +55,7 @@ public class QuizActivity extends AppCompatActivity {
     private int mCurrentIndex = 0;
     private boolean mIsCheater;
     private boolean mEnableNextButton = false;
+    private int mHint = 3;
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
@@ -76,7 +82,10 @@ public class QuizActivity extends AppCompatActivity {
             mCurrentIndex = savedInstanceState.getInt(KEY_INDEX,0);
             mIsCheater = savedInstanceState.getBoolean(KEY_IS_CHEATER, false);
             mEnableNextButton = savedInstanceState.getBoolean(KEY_ENABLE_NEXT_BUTTON, false);
+            mHint = savedInstanceState.getInt(KEY_HINT, 0);
         }
+
+        mHintTextView.setText(String.valueOf(mHint));
 
         mQuestionTextView.setOnClickListener(v -> {
             mCurrentIndex = (mCurrentIndex + 1) % mQuestionBank.length;
@@ -100,13 +109,24 @@ public class QuizActivity extends AppCompatActivity {
             enableNextButton(!mEnableNextButton);
         });
 
+        isHintButtonEnable();
         mCheatButton.setOnClickListener(v -> {
+            mHint--;
+            isHintButtonEnable();
+            mHintTextView.setText(String.valueOf(mHint));
+            Log.d(TAG, "Hint:" + mHint);
             boolean answerIsTRue = mQuestionBank[mCurrentIndex].isAnswerTrue();
             Intent intent = CheatActivity.newIntent(QuizActivity.this, answerIsTRue);
             startActivityForResult(intent, REQUEST_CODE_CHEAT);
         });
 
         updateQuestion();
+    }
+
+    private void isHintButtonEnable() {
+        if (mHint <= 0) {
+            mCheatButton.setEnabled(false);
+        }
     }
 
     private void enableNextButton(boolean enable) {
@@ -145,6 +165,7 @@ public class QuizActivity extends AppCompatActivity {
         savedInstanceState.putInt(KEY_INDEX, mCurrentIndex);
         savedInstanceState.putBoolean(KEY_IS_CHEATER, mIsCheater);
         savedInstanceState.putBoolean(KEY_ENABLE_NEXT_BUTTON, mEnableNextButton);
+        savedInstanceState.putInt(KEY_HINT, mHint);
     }
 
     @Override
