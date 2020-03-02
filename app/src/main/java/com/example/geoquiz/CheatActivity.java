@@ -3,9 +3,15 @@ package com.example.geoquiz;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.View;
+import android.view.ViewAnimationUtils;
 import android.widget.Button;
 import android.widget.TextView;
 
@@ -17,6 +23,7 @@ public class CheatActivity extends AppCompatActivity {
     private static final String EXTRA_ANSWER_IS_TRUE = "com.example.geoquiz.answer_is_true";
     public static final String EXTRA_ANSWER_SHOWN = "com.example.geoquiz.answer_shown";
     private static final String KEY_ANSWER_IS_SHOWN = "index";
+    String TAG = "CheatActivity";
 
     private boolean mAnswerIsTrue;
     private boolean isAnswerShown = false;
@@ -47,9 +54,28 @@ public class CheatActivity extends AppCompatActivity {
             } else {
                 mAnswerTextView.setText(R.string.false_button);
             }
-            isAnswerShown = true;
-            setAnswerShownResult(isAnswerShown);
+            setAnswerShownResult(true);
+
+            //Example code for check SDK before run code
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                int cx = mShowAnswerButton.getWidth() / 2;
+                int cy = mShowAnswerButton.getHeight() / 2;
+                float radius = mShowAnswerButton.getWidth();
+                Animator anim = ViewAnimationUtils
+                        .createCircularReveal(mShowAnswerButton, cx, cy, radius, 0);
+                anim.addListener(new AnimatorListenerAdapter() {
+                    @Override
+                    public void onAnimationEnd(Animator animation) {
+                        super.onAnimationEnd(animation);
+                        mShowAnswerButton.setVisibility(View.INVISIBLE);
+                    }
+                });
+                anim.start();
+            } else {
+                mShowAnswerButton.setVisibility(View.INVISIBLE);
+            }
         });
+
     }
 
     @Override
