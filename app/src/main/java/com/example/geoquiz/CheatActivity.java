@@ -16,7 +16,7 @@ public class CheatActivity extends AppCompatActivity {
 
     private static final String EXTRA_ANSWER_IS_TRUE = "com.example.geoquiz.answer_is_true";
     public static final String EXTRA_ANSWER_SHOWN = "com.example.geoquiz.answer_shown";
-    private static final String KEY_INDEX = "index";
+    private static final String KEY_ANSWER_IS_SHOWN = "index";
 
     private boolean mAnswerIsTrue;
     private boolean isAnswerShown = false;
@@ -35,7 +35,7 @@ public class CheatActivity extends AppCompatActivity {
         ButterKnife.bind(this);
 
         if (savedInstanceState != null) {
-            isAnswerShown = savedInstanceState.getBoolean(KEY_INDEX, false);
+            isAnswerShown = savedInstanceState.getBoolean(KEY_ANSWER_IS_SHOWN, false);
             setAnswerShownResult(isAnswerShown);
         }
 
@@ -55,7 +55,7 @@ public class CheatActivity extends AppCompatActivity {
     @Override
     protected void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putBoolean(KEY_INDEX, isAnswerShown);
+        outState.putBoolean(KEY_ANSWER_IS_SHOWN, isAnswerShown);
     }
 
     private void setAnswerShownResult(boolean isAnswerShown) {

@@ -19,6 +19,8 @@ public class QuizActivity extends AppCompatActivity {
 
     private static final String TAG = "QuizActivity";
     private static final String KEY_INDEX = "index";
+    public static final String KEY_IS_CHEATER = "cheater";
+    public static final String KEY_ENABLE_NEXT_BUTTON = "nextButton";
     public static final int REQUEST_CODE_CHEAT = 0;
 
     @BindView(R.id.question_text_view)
@@ -47,6 +49,7 @@ public class QuizActivity extends AppCompatActivity {
 
     private int mCurrentIndex = 0;
     private boolean mIsCheater;
+    private boolean mEnableNextButton = false;
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
@@ -71,20 +74,31 @@ public class QuizActivity extends AppCompatActivity {
 
         if (savedInstanceState != null) {
             mCurrentIndex = savedInstanceState.getInt(KEY_INDEX,0);
+            mIsCheater = savedInstanceState.getBoolean(KEY_IS_CHEATER, false);
+            mEnableNextButton = savedInstanceState.getBoolean(KEY_ENABLE_NEXT_BUTTON, false);
         }
 
         mQuestionTextView.setOnClickListener(v -> {
             mCurrentIndex = (mCurrentIndex + 1) % mQuestionBank.length;
             updateQuestion();});
 
-        mTrueButton.setOnClickListener(v -> checkAnswer(true));
+        mTrueButton.setOnClickListener(v -> {
+            checkAnswer(true);
+            enableNextButton(!mEnableNextButton);
+        });
 
-        mFalseButton.setOnClickListener(v -> checkAnswer(false));
+        mFalseButton.setOnClickListener(v -> {
+            checkAnswer(false);
+            enableNextButton(!mEnableNextButton);
+        });
 
+        enableNextButton(mEnableNextButton);
         mNextButton.setOnClickListener(v -> {
             mCurrentIndex = (mCurrentIndex + 1) % mQuestionBank.length;
             mIsCheater = false;
-            updateQuestion();});
+            updateQuestion();
+            enableNextButton(!mEnableNextButton);
+        });
 
         mCheatButton.setOnClickListener(v -> {
             boolean answerIsTRue = mQuestionBank[mCurrentIndex].isAnswerTrue();
@@ -93,6 +107,11 @@ public class QuizActivity extends AppCompatActivity {
         });
 
         updateQuestion();
+    }
+
+    private void enableNextButton(boolean enable) {
+        mNextButton.setEnabled(enable);
+        mEnableNextButton = enable;
     }
 
     @Override
@@ -124,6 +143,8 @@ public class QuizActivity extends AppCompatActivity {
         super.onSaveInstanceState(savedInstanceState);
         Log.i(TAG, "onSavedInstanceState");
         savedInstanceState.putInt(KEY_INDEX, mCurrentIndex);
+        savedInstanceState.putBoolean(KEY_IS_CHEATER, mIsCheater);
+        savedInstanceState.putBoolean(KEY_ENABLE_NEXT_BUTTON, mEnableNextButton);
     }
 
     @Override
